@@ -32,7 +32,7 @@ There will be two 2-day sessions for this bootcamp, 5/12 - 5/13 and 5/14 - 5/15.
 
 `project-2-anchor-client` -
 
-There has been a solana program deployed on devnet with this address: `INSERT PUBKEY HERE`
+There has been a solana program deployed on devnet with this address: `5Couhd2qWo7v3L8LR3Q4daDPdFyJpV8MNqi3wkzNWGvu`
 
 _(Note: the address will not be shown until day 1 in the office)_
 
