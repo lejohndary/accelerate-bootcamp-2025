@@ -8,21 +8,8 @@ declare_id!("7qiThtk83oZCPeDQuooiUajsxrxeBs8DHQdA6kzqQJZs");
 pub mod project_4_cpis {
     use super::*;
 
-    pub fn create_token_account(ctx: Context<CreateTokenAccount>) -> Result<()> {
-        anchor_spl::associated_token::create(
-            CpiContext::new(
-                ctx.accounts.associated_token_program.to_account_info(),
-                anchor_spl::associated_token::Create {
-                    payer: ctx.accounts.payer.to_account_info(),
-                    associated_token: ctx.accounts.token_account.to_account_info(),
-                    authority: ctx.accounts.owner.to_account_info(),
-                    mint: ctx.accounts.mint.to_account_info(),
-                    system_program: ctx.accounts.system_program.to_account_info(),
-                    token_program: ctx.accounts.token_program.to_account_info(),
-                },
-            )
-        )?;
-
+    pub fn create_token_account(_ctx: Context<CreateTokenAccount>) -> Result<()> {
+        // The account is automatically created by Anchor's account validation
         Ok(())
     }
 
@@ -36,7 +23,6 @@ pub mod project_4_cpis {
         let cpi_program = ctx.accounts.token_program.to_account_info();
         let cpi_context = CpiContext::new(cpi_program, mint_cpi_accounts);
 
-        let decimals = ctx.accounts.mint.decimals;
         token_interface::mint_to(cpi_context, amount)?;
 
         Ok(())
@@ -65,16 +51,19 @@ pub mod project_4_cpis {
 pub struct CreateTokenAccount<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
-    /// CHECK: This is the account that will own the token account
-    pub owner: UncheckedAccount<'info>,
+    pub owner: SystemAccount<'info>,
     pub mint: InterfaceAccount<'info, Mint>,
-    
-    #[account(mut)]
+    #[account(
+        init,
+        payer = payer,
+        associated_token::mint = mint,
+        associated_token::authority = owner,
+        associated_token::token_program = token_program
+    )]
     pub token_account: InterfaceAccount<'info, TokenAccount>,
-    
-    pub system_program: Program<'info, System>,
     pub token_program: Interface<'info, TokenInterface>,
     pub associated_token_program: Program<'info, AssociatedToken>,
+    pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
